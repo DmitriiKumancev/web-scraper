@@ -13,13 +13,13 @@ import (
 	"regexp"
 	"time"
 
-	"web-scraper/htmlindex"
-
 	"github.com/cornelk/gotokit/log"
 	"github.com/h2non/filetype"
 	"github.com/h2non/filetype/types"
 	"golang.org/x/net/html"
 	"golang.org/x/net/proxy"
+
+	"web-scraper/htmlindex"
 )
 
 // Config contains the scraper configuration.

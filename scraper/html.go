@@ -6,9 +6,10 @@ import (
 	"net/url"
 	"strings"
 
-	"web-scraper/htmlindex"
 	"github.com/cornelk/gotokit/log"
 	"golang.org/x/net/html"
+
+	"web-scraper/htmlindex"
 )
 
 // ignoredURLPrefixes contains a list of URL prefixes that do not need to bo adjusted.
