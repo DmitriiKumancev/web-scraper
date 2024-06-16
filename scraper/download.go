@@ -8,7 +8,7 @@ import (
 	"net/url"
 	"os"
 
-	"github.com/cornelk/goscrape/htmlindex"
+	"web-scraper/htmlindex"
 	"github.com/cornelk/gotokit/log"
 )
 

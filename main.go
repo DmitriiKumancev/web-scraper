@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/alexflint/go-arg"
-	"github.com/cornelk/goscrape/scraper"
+	"web-scraper/scraper"
 	"github.com/cornelk/gotokit/app"
 	"github.com/cornelk/gotokit/buildinfo"
 	"github.com/cornelk/gotokit/env"
@@ -22,20 +22,18 @@ var (
 )
 
 type arguments struct {
-	Exclude []string `arg:"-n,--include" help:"only include URLs with PERL Regular Expressions support"`
-	Include []string `arg:"-x,--exclude" help:"exclude URLs with PERL Regular Expressions support"`
-	Output  string   `arg:"-o,--output" help:"output directory to write files to"`
-	URLs    []string `arg:"positional"`
-
-	Depth        int64 `arg:"-d,--depth" help:"download depth, 0 for unlimited" default:"10"`
-	ImageQuality int64 `arg:"-i,--imagequality" help:"image quality, 0 to disable reencoding"`
-	Timeout      int64 `arg:"-t,--timeout" help:"time limit in seconds for each HTTP request to connect and read the request body"`
-
-	Proxy     string `arg:"-p,--proxy" help:"HTTP proxy to use for scraping"`
-	User      string `arg:"-u,--user" help:"user[:password] to use for authentication"`
-	UserAgent string `arg:"-a,--useragent" help:"user agent to use for scraping"`
-
-	Verbose bool `arg:"-v,--verbose" help:"verbose output"`
+	Exclude      []string `arg:"-x,--exclude" help:"exclude URLs with PERL Regular Expressions support"`
+	Include      []string `arg:"-n,--include" help:"only include URLs with PERL Regular Expressions support"`
+	Output       string   `arg:"-o,--output" help:"output directory to write files to"`
+	URLs         []string `arg:"positional"`
+	Depth        int64    `arg:"-d,--depth" help:"download depth, 0 for unlimited" default:"10"`
+	ImageQuality int64    `arg:"-i,--imagequality" help:"image quality, 0 to disable reencoding"`
+	Timeout      int64    `arg:"-t,--timeout" help:"time limit in seconds for each HTTP request to connect and read the request body"`
+	SpecificPath string   `arg:"-s,--specificpath" help:"specific path to parse"`
+	Proxy        string   `arg:"-p,--proxy" help:"HTTP proxy to use for scraping"`
+	User         string   `arg:"-u,--user" help:"user[:password] to use for authentication"`
+	UserAgent    string   `arg:"-a,--useragent" help:"user agent to use for scraping"`
+	Verbose      bool     `arg:"-v,--verbose" help:"verbose output"`
 }
 
 func (arguments) Description() string {
@@ -126,6 +124,7 @@ func run(ctx context.Context, args arguments) error {
 		Password:        password,
 		UserAgent:       args.UserAgent,
 		Proxy:           args.Proxy,
+		SpecificPath:    args.SpecificPath,
 	}
 
 	for _, url := range args.URLs {

@@ -1,4 +1,4 @@
-module github.com/cornelk/goscrape
+module web-scraper
 
 go 1.21
 

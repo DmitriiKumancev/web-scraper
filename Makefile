@@ -17,7 +17,7 @@ test-coverage-web: test-coverage ## run unit tests and show test coverage in bro
 	go tool cover -html=.testCoverage
 
 install: ## install all binaries
-	go install -buildvcs=false .
+	go install -buildvcs=true .
 
 install-linters: ## install all linters
 	go install github.com/golangci/golangci-lint/cmd/golangci-lint@${GOLANGCI_VERSION}
@@ -25,10 +25,15 @@ install-linters: ## install all linters
 release-snapshot: ## build release binaries from current git state as snapshot
 	goreleaser release --snapshot --clean
 
-scrape: ## run web scraping on the specified URL
-	@echo "Usage: make scrape URL='<url>' INCLUDE='<include-path>' OUTPUT='<output-dir>'"
+build: ## build the goscrape binary
+	go build -o goscrape main.go
+
+scrape: build ## run web scraping on the specified URL
+	@echo "Usage: make scrape URL='<url>'"
 	@[ -n "$(URL)" ] || ( echo ">> URL is not specified"; false )
-	@[ -n "$(INCLUDE)" ] || ( echo ">> INCLUDE is not specified"; false )
-	@[ -n "$(OUTPUT)" ] || ( echo ">> OUTPUT is not specified"; false )
-	@GOBIN=$(shell go env GOPATH)/bin go install ./...
-	@goscrape --include '$(INCLUDE)' --output '$(OUTPUT)' '$(URL)'
+	$(eval PATH := $(shell echo $(URL) | sed 's|https://[^/]*||'))
+	$(eval INCLUDE := $(PATH).*)
+	$(eval SPECIFICPATH := $(PATH))
+	$(eval OUTPUT := ./output)
+	$(eval USERAGENT := Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html))
+	@./goscrape --include '$(INCLUDE)' --output '$(OUTPUT)' --useragent '$(USERAGENT)' --specificpath '$(SPECIFICPATH)' '$(URL)'

@@ -2,6 +2,7 @@ package scraper
 
 import (
 	"net/url"
+	"strings"
 
 	"github.com/cornelk/gotokit/log"
 )
@@ -38,6 +39,11 @@ func (s *Scraper) shouldURLBeDownloaded(url *url.URL, currentDepth uint, isAsset
 
 		if s.config.MaxDepth != 0 && currentDepth == s.config.MaxDepth {
 			s.logger.Debug("Skipping too deep level page", log.String("url", url.String()))
+			return false
+		}
+
+		if s.config.SpecificPath != "" && !strings.HasPrefix(url.Path, s.config.SpecificPath) {
+			s.logger.Debug("Skipping URL not matching specific path", log.String("url", url.String()))
 			return false
 		}
 	}

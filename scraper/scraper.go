@@ -13,7 +13,8 @@ import (
 	"regexp"
 	"time"
 
-	"github.com/cornelk/goscrape/htmlindex"
+	"web-scraper/htmlindex"
+
 	"github.com/cornelk/gotokit/log"
 	"github.com/h2non/filetype"
 	"github.com/h2non/filetype/types"
@@ -37,6 +38,8 @@ type Config struct {
 
 	UserAgent string
 	Proxy     string
+
+	SpecificPath string 
 }
 
 // Scraper contains all scraping data.
@@ -55,7 +58,7 @@ type Scraper struct {
 	processed map[string]struct{}
 
 	imagesQueue       []*url.URL
-	webPageQueue      []*url.URL
+	// webPageQueue      []*url.URL
 	webPageQueueDepth map[string]uint
 }
 
@@ -150,15 +153,7 @@ func (s *Scraper) Start(ctx context.Context) error {
 		return err
 	}
 
-	for len(s.webPageQueue) > 0 {
-		ur := s.webPageQueue[0]
-		s.webPageQueue = s.webPageQueue[1:]
-		currentDepth := s.webPageQueueDepth[ur.String()]
-		if err := s.downloadWebpage(ctx, ur, currentDepth+1); err != nil && errors.Is(err, context.Canceled) {
-			return err
-		}
-	}
-
+	// Прекращаем парсинг после загрузки начальной страницы
 	return nil
 }
 
@@ -201,24 +196,10 @@ func (s *Scraper) downloadWebpage(ctx context.Context, u *url.URL, currentDepth 
 
 	s.storeDownload(u, buf, doc, index, fileExtension)
 
-	if err := s.downloadReferences(ctx, index); err != nil {
-		return err
-	}
-
-	// check first and download afterward to not hit max depth limit for
-	// start page links because of recursive linking
-	// a hrefs
-	references, err := index.URLs("a")
-	if err != nil {
-		s.logger.Error("Parsing URL failed", log.Err(err))
-	}
-
-	for _, ur := range references {
-		if s.shouldURLBeDownloaded(ur, currentDepth, false) {
-			s.webPageQueue = append(s.webPageQueue, ur)
-			s.webPageQueueDepth[ur.String()] = currentDepth
-		}
-	}
+	// Удаляем вызов downloadReferences, чтобы не загружать ссылки на ресурсы
+	// if err := s.downloadReferences(ctx, index); err != nil {
+	// 	return err
+	// }
 
 	return nil
 }

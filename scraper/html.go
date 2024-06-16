@@ -6,7 +6,7 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/cornelk/goscrape/htmlindex"
+	"web-scraper/htmlindex"
 	"github.com/cornelk/gotokit/log"
 	"golang.org/x/net/html"
 )
